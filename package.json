@@ -1,6 +1,8 @@
 {
   "name": "emojr",
   "version": "0.1.0",
+  "description": "Emoji-based social media platform for creative expression and communication.",
+  "author": "Eldar Mirzabekov <prog.eldar@gmail.com>",
   "private": true,
   "scripts": {
     "build": "next build",
