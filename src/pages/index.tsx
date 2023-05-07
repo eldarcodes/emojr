@@ -1,11 +1,20 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { SignInButton, SignedIn, UserButton, SignedOut } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignedIn,
+  UserButton,
+  SignedOut,
+  useUser,
+} from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const { data } = api.posts.getAll.useQuery();
+  const { data, isLoading } = api.posts.getAll.useQuery();
+
+  if (!data || isLoading) return <div>Loading...</div>;
+  if (!data) return <div>Something went wrong</div>;
 
   return (
     <>
@@ -25,22 +34,41 @@ const Home: NextPage = () => {
 
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] p-10">
-        <div>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+      <main className="flex h-screen justify-center">
+        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
+          <div className="flex items-center border-b border-slate-400 p-4">
+            <SignedIn>
+              <div className="flex w-full items-center gap-3">
+                <UserButton />
+                <input
+                  placeholder="Type your emojis!"
+                  className="grow bg-transparent outline-none"
+                />
+              </div>
+            </SignedIn>
 
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+          </div>
+
+          <div className="flex flex-col">
+            {data.map(({ post, author }) => (
+              <div
+                className="flex items-center gap-2 border-b border-slate-400 p-8"
+                key={post.id}
+              >
+                <img
+                  src={author.profilePicture}
+                  className="h-8 w-8 rounded-full"
+                  alt={author.username || "User"}
+                />
+
+                {post.content}
+              </div>
+            ))}
+          </div>
         </div>
-
-        <ul>
-          {data?.map((post) => (
-            <li key={post.id}>{post.content}</li>
-          ))}
-        </ul>
       </main>
     </>
   );
