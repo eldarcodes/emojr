@@ -2,9 +2,16 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
 import Image from "next/image";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
+import { Spinner } from "~/components/Spinner";
 
 import type { NextPage } from "next";
 import type { RouterOutputs } from "~/utils/api";
@@ -42,11 +49,26 @@ const PostView = (props: PostWithUser) => {
   );
 };
 
-const Home: NextPage = () => {
+const Feed = () => {
   const { data, isLoading } = api.posts.getAll.useQuery();
 
-  if (!data || isLoading) return <div>Loading...</div>;
-  if (!data) return <div>Something went wrong</div>;
+  if (isLoading) return <Spinner fullPage size={40} />;
+
+  if (!data) return <div>Something went wrong ☹️</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map((postWithUser) => (
+        <PostView key={postWithUser.post.id} {...postWithUser} />
+      ))}
+    </div>
+  );
+};
+
+const Home: NextPage = () => {
+  const { isLoaded: isUserLoaded } = useUser();
+
+  if (!isUserLoaded) return null;
 
   return (
     <>
@@ -85,11 +107,7 @@ const Home: NextPage = () => {
             </SignedOut>
           </div>
 
-          <div className="flex flex-col">
-            {data.map((postWithUser) => (
-              <PostView key={postWithUser.post.id} {...postWithUser} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
