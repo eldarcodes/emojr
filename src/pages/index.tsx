@@ -94,7 +94,16 @@ const Home: NextPage = () => {
           <div className="flex items-center border-b border-slate-700 p-4">
             <SignedIn>
               <div className="flex w-full items-center gap-3">
-                <UserButton />
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: {
+                        width: 56,
+                        height: 56,
+                      },
+                    },
+                  }}
+                />
                 <input
                   placeholder="Type your emojis!"
                   className="grow bg-transparent outline-none"
