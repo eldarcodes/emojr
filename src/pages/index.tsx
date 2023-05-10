@@ -1,3 +1,4 @@
+import { useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
@@ -43,7 +44,7 @@ const PostView = (props: PostWithUser) => {
           <div>{dayjs(post.createdAt).fromNow()}</div>
         </div>
 
-        <div className="text-lg">{post.content}</div>
+        <div className="text-2xl">{post.content}</div>
       </div>
     </div>
   );
@@ -66,6 +67,17 @@ const Feed = () => {
 };
 
 const Home: NextPage = () => {
+  const [inputValue, setInputValue] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInputValue("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
+
   const { isLoaded: isUserLoaded } = useUser();
 
   if (!isUserLoaded) return null;
@@ -107,7 +119,13 @@ const Home: NextPage = () => {
                 <input
                   placeholder="Type your emojis!"
                   className="grow bg-transparent outline-none"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={isPosting}
                 />
+                <button onClick={() => mutate({ content: inputValue })}>
+                  Post
+                </button>
               </div>
             </SignedIn>
 
