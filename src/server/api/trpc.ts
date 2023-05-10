@@ -27,13 +27,11 @@ import { prisma } from "~/server/db";
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
   const { req } = _opts;
 
-  const auth = getAuth(req);
-
-  const user = auth.user;
+  const { userId } = getAuth(req);
 
   return {
     prisma,
-    currentUser: user,
+    userId,
   };
 };
 
@@ -87,7 +85,7 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuth = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.currentUser) {
+  if (!ctx.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
     });
@@ -95,7 +93,7 @@ const enforceUserIsAuth = t.middleware(async ({ ctx, next }) => {
 
   return next({
     ctx: {
-      currentUser: ctx.currentUser,
+      userId: ctx.userId,
     },
   });
 });
