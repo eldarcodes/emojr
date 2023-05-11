@@ -10,6 +10,7 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
+import toast from "react-hot-toast";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
@@ -76,6 +77,17 @@ const Home: NextPage = () => {
       setInputValue("");
       void ctx.posts.getAll.invalidate();
     },
+    onError: (error) => {
+      const errorMessage = error.data?.zodError?.fieldErrors.content;
+
+      console.log(error.data);
+
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to post, please try again later.");
+      }
+    },
   });
 
   const { isLoaded: isUserLoaded } = useUser();
@@ -121,11 +133,27 @@ const Home: NextPage = () => {
                   className="grow bg-transparent outline-none"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+
+                      if (inputValue) {
+                        mutate({ content: inputValue });
+                      }
+                    }
+                  }}
                   disabled={isPosting}
                 />
-                <button onClick={() => mutate({ content: inputValue })}>
-                  Post
-                </button>
+
+                {inputValue && !isPosting && (
+                  <button
+                    onClick={() => mutate({ content: inputValue })}
+                    disabled={isPosting}
+                  >
+                    Post
+                  </button>
+                )}
+                {isPosting && <Spinner size={24} />}
               </div>
             </SignedIn>
 
