@@ -17,6 +17,7 @@ import { Spinner } from "~/components/Spinner";
 
 import type { NextPage } from "next";
 import type { RouterOutputs } from "~/utils/api";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 
@@ -26,26 +27,37 @@ const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   return (
     <div className="flex gap-2 border-b border-slate-700 p-4" key={post.id}>
-      <Image
-        src={author.profilePicture}
-        className="h-14 w-14 rounded-full"
-        width={56}
-        height={56}
-        alt={author.username}
-      />
+      <Link href={`/@${author.username}`}>
+        <Image
+          src={author.profilePicture}
+          className="h-14 w-14 rounded-full"
+          width={56}
+          height={56}
+          alt={author.username}
+        />
+      </Link>
 
       <div className="flex flex-col text-slate-500">
         <div className="flex gap-1">
-          <div className="text-slate-100">
-            {author.firstName} {author.lastName}
-          </div>
+          <Link href={`/@${author.username}`}>
+            <div className="text-slate-100">
+              {author.firstName} {author.lastName}
+            </div>
+          </Link>
 
-          <div>@{author.username}</div>
+          <Link href={`/@${author.username}`}>
+            <div className="cursor-pointer">@{author.username}</div>
+          </Link>
+
           <div>·</div>
-          <div>{dayjs(post.createdAt).fromNow()}</div>
+          <Link href={`/post/${post.id}`}>
+            <div>{dayjs(post.createdAt).fromNow()}</div>
+          </Link>
         </div>
 
-        <div className="text-2xl">{post.content}</div>
+        <Link href={`/post/${post.id}`}>
+          <div className="text-2xl">{post.content}</div>
+        </Link>
       </div>
     </div>
   );
