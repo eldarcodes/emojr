@@ -92,8 +92,6 @@ const Home: NextPage = () => {
     onError: (error) => {
       const errorMessage = error.data?.zodError?.fieldErrors.content;
 
-      console.log(error.data);
-
       if (errorMessage && errorMessage[0]) {
         toast.error(errorMessage[0]);
       } else {
