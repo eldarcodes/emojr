@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
-import { PageLayout } from "~/components/Layout";
+import { PageLayout } from "~/components/PageLayout";
 import { PostView } from "~/components/PostView";
 
 import type { NextPage } from "next";

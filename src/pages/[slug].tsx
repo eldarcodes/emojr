@@ -69,7 +69,7 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import SuperJSON from "superjson";
-import { PageLayout } from "~/components/Layout";
+import { PageLayout } from "~/components/PageLayout";
 import Image from "next/image";
 import { Spinner } from "~/components/Spinner";
 import { PostView } from "~/components/PostView";
