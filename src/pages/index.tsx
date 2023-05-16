@@ -1,9 +1,5 @@
 import { useState } from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import {
   SignInButton,
   SignedIn,
@@ -15,54 +11,10 @@ import toast from "react-hot-toast";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
-import { PageLayout } from "~/components/layout";
+import { PageLayout } from "~/components/Layout";
+import { PostView } from "~/components/PostView";
 
 import type { NextPage } from "next";
-import type { RouterOutputs } from "~/utils/api";
-
-dayjs.extend(relativeTime);
-
-type PostWithUser = RouterOutputs["posts"]["getAll"][number];
-
-const PostView = (props: PostWithUser) => {
-  const { post, author } = props;
-  return (
-    <div className="flex gap-2 border-b border-slate-700 p-4" key={post.id}>
-      <Link href={`/@${author.username}`}>
-        <Image
-          src={author.profilePicture}
-          className="h-14 w-14 rounded-full"
-          width={56}
-          height={56}
-          alt={author.username}
-        />
-      </Link>
-
-      <div className="flex flex-col text-slate-500">
-        <div className="flex gap-1">
-          <Link href={`/@${author.username}`}>
-            <div className="text-slate-100">
-              {author.firstName} {author.lastName}
-            </div>
-          </Link>
-
-          <Link href={`/@${author.username}`}>
-            <div className="cursor-pointer">@{author.username}</div>
-          </Link>
-
-          <div>·</div>
-          <Link href={`/post/${post.id}`}>
-            <div>{dayjs(post.createdAt).fromNow()}</div>
-          </Link>
-        </div>
-
-        <Link href={`/post/${post.id}`}>
-          <div className="text-2xl">{post.content}</div>
-        </Link>
-      </div>
-    </div>
-  );
-};
 
 const Feed = () => {
   const { data, isLoading } = api.posts.getAll.useQuery();
@@ -73,8 +25,8 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {data.map((postWithUser) => (
-        <PostView key={postWithUser.post.id} {...postWithUser} />
+      {data.map(({ author, post }) => (
+        <PostView key={post.id} author={author} post={post} />
       ))}
     </div>
   );

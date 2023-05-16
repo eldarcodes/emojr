@@ -4,6 +4,23 @@ import { api } from "~/utils/api";
 
 import type { GetStaticProps, NextPage } from "next";
 
+const ProfileFeed = ({ userId }: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId,
+  });
+
+  if (isLoading) return <Spinner fullPage size={24} />;
+  if (!data || data.length === 0) return <div>No posts</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map(({ author, post }) => (
+        <PostView key={post.id} post={post} author={author} />
+      ))}
+    </div>
+  );
+};
+
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data } = api.profile.getUserByUsername.useQuery({
     username,
@@ -40,6 +57,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         </div>
 
         <div className="w-full border-b border-slate-600" />
+
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   );
@@ -50,8 +69,10 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import SuperJSON from "superjson";
-import { PageLayout } from "~/components/layout";
+import { PageLayout } from "~/components/Layout";
 import Image from "next/image";
+import { Spinner } from "~/components/Spinner";
+import { PostView } from "~/components/PostView";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createServerSideHelpers({
