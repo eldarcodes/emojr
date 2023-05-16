@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import {
   SignInButton,
   SignedIn,
@@ -14,10 +15,10 @@ import toast from "react-hot-toast";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
+import { PageLayout } from "~/components/layout";
 
 import type { NextPage } from "next";
 import type { RouterOutputs } from "~/utils/api";
-import Link from "next/link";
 
 dayjs.extend(relativeTime);
 
@@ -123,58 +124,56 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex h-screen justify-center">
-        <div className="h-full w-full border-x border-slate-700 md:max-w-2xl">
-          <div className="flex items-center border-b border-slate-700 p-4">
-            <SignedIn>
-              <div className="flex w-full items-center gap-3">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      userButtonAvatarBox: {
-                        width: 56,
-                        height: 56,
-                      },
+      <PageLayout>
+        <div className="flex items-center border-b border-slate-700 p-4">
+          <SignedIn>
+            <div className="flex w-full items-center gap-3">
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: {
+                      width: 56,
+                      height: 56,
                     },
-                  }}
-                />
-                <input
-                  placeholder="Type your emojis!"
-                  className="grow bg-transparent outline-none"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
+                  },
+                }}
+              />
+              <input
+                placeholder="Type your emojis!"
+                className="grow bg-transparent outline-none"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
 
-                      if (inputValue) {
-                        mutate({ content: inputValue });
-                      }
+                    if (inputValue) {
+                      mutate({ content: inputValue });
                     }
-                  }}
+                  }
+                }}
+                disabled={isPosting}
+              />
+
+              {inputValue && !isPosting && (
+                <button
+                  onClick={() => mutate({ content: inputValue })}
                   disabled={isPosting}
-                />
+                >
+                  Post
+                </button>
+              )}
+              {isPosting && <Spinner size={24} />}
+            </div>
+          </SignedIn>
 
-                {inputValue && !isPosting && (
-                  <button
-                    onClick={() => mutate({ content: inputValue })}
-                    disabled={isPosting}
-                  >
-                    Post
-                  </button>
-                )}
-                {isPosting && <Spinner size={24} />}
-              </div>
-            </SignedIn>
-
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          </div>
-
-          <Feed />
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
         </div>
-      </main>
+
+        <Feed />
+      </PageLayout>
     </>
   );
 };
